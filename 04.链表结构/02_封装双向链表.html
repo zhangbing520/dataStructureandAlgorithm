@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function DoubleLinkedList() {
+      // 内部类 节点类
+      function Node(data) {
+        this.data = data
+        this.prev = null
+        this.next = null
+      }
+      // 属性
+      this.head = null
+      this.tail = null 
+      this.length = 0
+      // 常见的操作： 方法
+      DoubleLinkedList.prototype.append = function(data) {
+        // 1. 根据创建新的节点
+        var newNode = new Node(data)
+        // 2. 判断是否添加的是第一个节点
+        if (this.length == 0) { // 2.1 是第一个节点
+          this.head = newNode
+          this.tail = newNode
+        } else { // 2.2 不是第一个节点
+            newNode.prev = this.tail
+            this.tail.next = newNode
+            this.tail = newNode
+            }
+        // 3. 添加完成后 length + 1
+        this.length += 1
+      }
+      DoubleLinkedList.prototype.insert = function(position, data) {
+        //1.越界判断
+        if (position < 0 || position > this.length) return false
+        //2.根据data创建新的节点
+        var newNode = new Node(data)
+        //3.插入新节点
+        //原链表为空
+          //情况1：插入的newNode是第一个节点
+        if (this.length == 0) {
+          this.head = newNode
+          this.tail = newNode
+        //原链表不为空
+        }else {
+          //情况2：position == 0
+          if (position == 0) {
+            this.head.prev = newNode
+            newNode.next = this.head
+            this.head = newNode
+          //情况3：position == this.length 
+          } else if(position == this.length) {
+            this.tail.next = newNode
+            newNode.prev = this.tail
+            this.tail = newNode
+            //情况4：0 < position < this.length
+          } else {
+              var current = this.head
+              var index = 0
+              while(index++ < position){
+                current = current.next
+              }
+              //修改pos位置前后节点变量的指向
+              newNode.next = current
+              newNode.prev = current.prev
+              current.prev.next = newNode
+              current.prev = newNode
+          }
+        }
+        //4.length+1
+        this.length += 1
+        return true//返回true表示插入成功
+      }  
+      DoubleLinkedList.prototype.get = function(position) {
+        //1.越界判断
+        if (position < 0 || position >= this.length) {//获取元素时position不能等于length
+          return null
+        }
+
+        //2.获取元素
+        var current = null
+        var index = 0
+        //this.length / 2 > position:从头开始遍历
+        if ((this.length / 2) > position) {
+          current = this.head
+          while(index++ < position){
+          current = current.next
+        }
+        //this.length / 2 =< position:从尾开始遍历
+        }else{
+          current = this.tail
+          index = this.length - 1
+          while(index-- > position){
+          current = current.prev
+        }
+        }
+        return current.data
+      }
+      DoubleLinkedList.prototype.indexOf = function(data) {
+        //1.定义变量
+        var current = this.head
+        var index = 0
+
+        //2.遍历链表，查找与data相同的节点
+        while(current){
+          if (current.data == data) {
+            return index
+          }
+          current = current.next
+          index += 1
+        }
+        return -1
+      } 
+      DoubleLinkedList.prototype.update = (position, newData) => {
+        //1.越界判断
+        if (position < 0 || position >= this.length) {
+          return false
+        }
+
+        //2.寻找正确的节点
+        var current = this.head
+        var index = 0
+        //this.length / 2 > position:从头开始遍历
+        if (this.length / 2 > position) {
+          while(index++ < position){
+          current = current.next
+        }
+        //this.length / 2 =< position:从尾开始遍历
+        }else{
+          current = this.tail
+          index = this.length - 1
+          while (index -- > position) {
+            current = current.prev
+          }
+        }
+
+        //3.修改找到节点的data
+        current.data = newData
+        return true//表示成功修改
+      }
+      DoubleLinkedList.prototype.removeAt = position => {
+        //1.越界判断
+        if (position < 0 || position >= this.length) {
+          return null
+        }
+        
+        //2.删除节点
+        //当链表中length == 1
+        //情况1：链表只有一个节点
+        var current = this.head//定义在最上面方便以下各种情况返回current.data
+        if (this.length == 1) {
+          this.head = null
+          this.tail = null
+        //当链表中length > 1
+        } else{
+          //情况2：删除第一个节点
+          if (position == 0) {
+            this.head.next.prev = null
+            this.head = this.head.next
+          //情况3：删除最后一个节点
+          }else if(position == this.length - 1){
+            current = this.tail//该情况下返回被删除的最后一个节点
+            this.tail.prev.next = null
+            this.tail = this.tail.prev
+          }else{
+          //情况4：删除链表中间的节点
+            var index = 0
+            while(index++ < position){
+              current = current.next
+            }
+            current.next.prev = current.prev
+            current.prev.next = current.next
+          }
+        }
+
+        //3.length -= 1
+        this.length -= 1
+        return current.data//返回被删除节点的数据
+      }
+      DoubleLinkedList.prototype.remove = data => {
+        //1.根据data获取下标值
+        var index = this.indexOf(data)
+        
+        //2.根据index删除对应位置的节点
+        return this.removeAt(index)
+      }
+      DoubleLinkedList.prototype.isEmpty = () => {
+        return this.length == 0
+      }
+      DoubleLinkedList.prototype.size = () => {
+        return this.length
+      }
+      DoubleLinkedList.prototype.getHead = () => {
+        return this.head.data
+      }
+      DoubleLinkedList.prototype.getTail = () => {
+        return this.tail.data
+      }
+      DoubleLinkedList.prototype.toString = function() {
+        return this.backwardString()
+      }
+      DoubleLinkedList.prototype.forwardString = function() {
+        // 1. 定义变量
+        var current = this.tail
+        var resultString = ''
+        // 2. 依次向前遍历，获取每一个节点
+        while (current) {
+          resultString += current.data + ' '
+          current = current.prev
+        }
+        return resultString
+      }
+      DoubleLinkedList.prototype.backwardString = function() {
+        // 1. 定义变量
+        var current = this.head
+        var resultString = ''
+        // 2. 以此向后遍历获取每一个节点
+        while (current) {
+          resultString += current.data + ' ' 
+          current = current.next
+        }
+        return resultString
+      }
+      DoubleLinkedList.prototype.insert = function(position, data) {
+        // 1. 越界判断
+        if (position < 0 || position > this.length) return false
+        // 2. 根据我们的data创建新的节点
+        var newNode = new Node(data)
+        // 3. 
+
+      }
+    }
+
+    // 测试代码
+    var list = new DoubleLinkedList()
+    // 1. 测试 append 方法
+    list.append('abc')
+    list.append('cba')
+    list.append('nba')
+
+    // 2. 测试转成字符串的方法
+    alert(list)
+    alert(list.backwardString())
+    alert(list.forwardString())
+  </script>
+</body>
+</html>
