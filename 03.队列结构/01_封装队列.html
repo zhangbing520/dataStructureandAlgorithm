@@ -20,8 +20,8 @@
       }
       
       // 2. 从队列中删除前端元素
-      Queue.prototype.dequeue = function(element) {
-        this.items.shift(element)
+      Queue.prototype.dequeue = function() {
+        return this.items.shift()
       }
 
       // 3. 查看前端的元素
@@ -56,7 +56,7 @@
     queue.enqueue('mba')
     alert(queue)
 
-    queue.dequeue()
+    alert(queue.dequeue())
     alert(queue)
     queue.dequeue()
     alert(queue)
@@ -64,6 +64,44 @@
     alert(queue.front())
     alert(queue.isEmpty())
     alert(queue.size())
+
+    // 队列应用：面试题：击鼓传花
+    var passGame = function(nameList, num) {
+      //1.创建队列结构
+      var queue = new Queue()
+
+      //2.将所有人依次加入队列
+      for(var i = 0; i < nameList.length; i++) {
+        queue.enqueue(nameList[i])
+      }
+      
+
+      // 3.开始数数
+     while(queue.size() > 1){//队列中只剩1个人就停止数数
+      // 不是num的时候，重新加入队列末尾
+      // 是num的时候，将其从队列中删除
+      // 3.1.num数字之前的人重新放入队列的末尾(把队列前面删除的加到队列最后)
+      for(var i = 0; i< num-1; i++ ){
+        queue.enqueue(queue.dequeue())
+      }
+      // 3.2.num对应这个人，直接从队列中删除
+      /*
+        思路是这样的，由于队列没有像数组一样的下标值不能直接取到某一元素，所以采用，把num前面的num-1个元素先删除后添加到队列末尾，这样第num个元素就排到了队列的最前面，可以直接使用dequeue方法进行删除
+      */
+      queue.dequeue()
+     }
+
+      //4.获取剩下的那个人
+      console.log(queue.size())			// 1					
+      var endName = queue.front()
+      console.log('最终剩下的人：' + endName) // 最终剩下的人：Lilei
+      
+      return nameList.indexOf(endName);
+    }
+
+    //5.测试击鼓传花
+    var names = ['lily', 'lucy', 'Tom', 'Lilei', 'Tony']
+    console.log(passGame(names, 3)) // 3
   </script>
 </body>
 </html>
