@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 创建列表类
+    function ArrayList() {
+      // 属性
+      this.array = []
+
+      // 方法
+      // 将数据可以插入到数组中的方法
+      ArrayList.prototype.insert = function(item) {
+        this.array.push(item)
+      }
+      ArrayList.prototype.toString = function() {
+        return this.array.join('-')
+      }
+      // 用于实现交换数组中两个值的函数
+      ArrayList.prototype.swap = function(m, n) {
+        var temp = this.array[m]
+        this.array[m] = this.array[n]
+        this.array[n] = temp
+      }
+
+      // 实现排序算法
+      // 冒泡排序
+      ArrayList.prototype.bubbleSort = function() {
+        // 1. 获取数组的长度
+        var length = this.array.length
+        // 第一次： i = length - 1, 比较到倒数第一个位置
+        // 第二次： i = length - 2, 比较到倒数第二个位置
+        for(var i = length - 1; i >=0; i--) {
+           // 第一次进来:  j = 0, 比较0位置和1位置的两个数据
+          //  最后一次进来：j = length -2, 比较 length - 1 和 length（取不到），所以i<length-1
+          for (var j = 0; j < i; j++) {
+            if (this.array[j] > this.array[j+1])
+            this.swap(j, j+1)
+          }
+        }
+        return this.array
+      }
+      // 选择排序
+      ArrayList.prototype.selectionSort = function() {
+        // 1. 获取数组长度
+        var length = this.array.length
+        // 2. 初始化每一轮比较的最小值的索引为 0
+        // 外层循环：从 索引为0 位置开始取数据，当剩下最后一个数据（索引为length-1）时不必取
+        for (var j = 0; j < length -1; j++){
+          // 内层循环：从 i + 1 位置开始，和后面的数据进行比较
+          var min = j
+          for (var i = min + 1; i < length; i++) {
+            if (this.array[min] > this.array[i]) {
+              min = i
+            }
+          }
+          this.swap(min, j)
+        }         
+        return this.array
+      }
+      // 插入排序
+      ArrayList.prototype.insertionSort = function() {
+        var length = this.array.length
+        // 外层循环
+        for (var i = 1; i < length; i++) {
+          var markedValue = this.array[i]
+          var j = i
+          while (this.array[j-1] > markedValue && j > 0) {
+            this.array[j] = this.array[j-1]
+            j--
+          }
+          // 将 j 位置的数据，放置 markedValue 就可以了
+          this.array[j] = markedValue
+        }
+        return this.array
+      }
+      // 希尔排序
+      ArrayList.prototype.shellSort = function() {
+        //1.获取数组的长度
+        let length = this.array.length
+
+        //2.初始化增量
+        let gap = Math.floor(length / 2)
+
+        //3.第一层循环：while循环(使gap不断减小)
+        while(gap >= 1 ){
+          //4.第二层循环：以gap为增量，进行分组，对分组进行插入排序
+          //重点为：将index = gap作为选中的第一个数据
+          for(let i = gap; i < length; i++){
+            let temp = this.array[i]
+            let j = i
+            //5.第三层循环:寻找正确的插入位置
+            while(this.array[j - gap] > temp && j > gap - 1){
+              this.array[j] = this.array[j - gap]
+              j -= gap
+            }
+          //6.将j位置的元素设置为temp
+          this.array[j] = temp
+          }
+
+          gap = Math.floor(gap / 2)
+        }
+        return this.array
+      } 
+    }
+
+    // 测试类
+    var list = new ArrayList()
+    // 插入元素
+    list.insert(66)
+    list.insert(88)
+    list.insert(12)
+    list.insert(87)
+    list.insert(100)
+    list.insert(5)
+    list.insert(566)
+    list.insert(23)
+    alert(list)
+
+    // 验证排序
+    // alert(list.bubbleSort())
+    // alert(list.selectionSort())
+    // alert(list.insertionSort())
+    alert(list.shellSort())
+  </script>
+</body>
+</html>
